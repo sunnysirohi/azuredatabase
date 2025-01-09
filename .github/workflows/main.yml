@@ -25,7 +25,12 @@ jobs:
       
       - name: Clean up resources
         run: |
-          az group delete --name ${{ env.resource-group }} --yes
+          if az group exists --name ${{ env.resource-group }} --query "exists" -o tsv; then
+            echo "Resource group ${{ env.resource-group }} exists. Deleting..."
+            az group delete --name ${{ env.resource-group }} --yes
+          else
+            echo "Resource group ${{ env.resource-group }} does not exist."
+          fi
           
   deploy_resources:
     runs-on: ubuntu-latest
